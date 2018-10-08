@@ -1,125 +1,124 @@
 <!DOCTYPE html>
-
+<html lang="pt-br">
 <head>
-    <meta charset="utf-8">
-   
-    <title>Team One</title>
-    <style>
-        table,td,th {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-        td,th {
-            padding: 10px;
-        }
-        th {
-            text-align: left;
-            background-color: black;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: whitesmoke;
-        }
-        tr:nth-child(odd) {
-            background-colorgit: white;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/list-users-style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <title>Lista de usuario</title>
 </head>
 <body>
-    <h1>Team One</h1>
 
-    <p>Gerenciador de Usuários</p>
-    
-    <form action="index.php" method="post">
-        <label for="">Problema</label>
-        <input name="titulo" type="text" value=""/>
-        <input name="botao_adicionar" type="submit" value="Adicionar">
-    </form>
 
-    <?php
 
+<!-- Filtrar Usuario -->
+<form action="index.php" method="post">
+    <div class="row py-2">
+            <div class="col-4">
+                <h4 class="pl-2">Usuários Cadastrados</h4>
+            </div>
+
+            <div class="col-4 input-group mb-3">
+                <div class="input-group">
+                    <input type="text" name="inserir-usuario" class="form-control" placeholder="Filtrar usuário" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                    <input type="submit" class="input-group-text" name="botao_filtrar" value="Filtrar usuário"  id="basic-addon2">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <a href="#" class="btn btn-primary">Novo Item</a>
+            </div>
+    </div>
+</form>
+
+<?php
         $servidor = "teamone_db_1";
         $usuario = "root";
         $senha = "phprs";
         $table = "usuarios";
 
-        $connection = new mysqli($servidor, $usuario, $senha, $table);
+        $conn = new mysqli($servidor, $usuario, $senha, $table);
 
-        if($connection->connect_error){
-            die("Falha de conexão: " . $connection->connect_error);
+        if($conn->connect_error){
+            die('Falaha na conexao: " . $conn->connect_error');
         }
 
+        // Comandos SQL 
 
-        # Tratar dados enviados via GET para excluir registro.
-        if($_GET["id"]!=""){
-            $sql = "DELETE FROM usuarios WHERE id = ".$_GET["id"];
-            if($connection->query($sql)===TRUE){
-                echo "Registro excluído com sucesso!";
-            }else{
-                echo "Ocorreu um erro:".$sql."<br/>".$connection->error;
-            }
-        }
-    
-        # Tratar dados enviados via POST para excluir registro.
-
-        # Tratar dados enviados para a página. data send to index
-        if($_POST["titulo"] != ""){
-            $sql = "INSERT INTO tickets (titulo, status) VALUES ('".utf8_encode($_POST["titulo"])."', 0)";         
-            if($connection->query($sql)===TRUE){
-                echo "Ticket adicionado!";
-            }else{
-                echo "Ocorreu um erro:".$sql."<br/>".$connection->error;
-            }
-        }
-
-        # Recover all register of tickets table.
         $sql = "SELECT * FROM usuarios";
-        $result = $connection->query($sql);
-    ?>
+        $resultado = $conn->query($sql);
+        
+?>
 
-        <?php
-            if($result->num_rows > 0){
-                ?>
-                <table>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome Completo</th>
-                        <th>Nome de Acesso</th>
-                        <th>Senha</th>
-                        <th>Status</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                <?php
-                    while($row = $result->fetch_assoc()){
-                        echo"<tr>";
-                        echo"<td>". $row["id"]."</td>";
-                        echo"<td>". utf8_decode($row["nome_completo"])."</td>";
-                        echo"<td>". utf8_decode($row["nome_acesso"])."</td>";
-                        echo"<td>". $row["senha"]."</td>";
-                        echo"<td>";
-                        if($row["status"]==0){
-                            echo "Inativo";
-                        }else{
-                            echo"Ativo";
-                        }
-                        ?>
-                        <td>
-                        <a href="index.php?id=<?=$row["id"]?>">APAGAR</a>
-                        </td>
-                        <?php
-                        echo"</td>";
-                        echo"</tr>";
-                    }
-                ?> 
-                </table>
-                <?php
-                    }else{
-                        echo "Empty register.";
-                    }
+<!-- Tabela de usuario cadastro -->
 
-                    $connection->close();
+<?php 
 
-                ?>
-  
+    if($resultado->num_rows > 0){
+?>
+
+<table class="table">
+
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nome Completo</th>
+            <th scope="col">Login</th>
+            <th scope="col">Senha</th>
+            <th scope="col">Status</th>
+            <th scope="col">Ações</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+<?php
+    while ($row = $resultado->fetch_assoc()){
+        echo"<tr>";
+            echo"<td>". $row["id"]."</td>";
+            echo"<td>". $row["nome_completo"]."</td>";
+            echo"<td>". $row["nome_acesso"]."</td>";
+            echo"<td>". $row["senha"]."</td>";
+            echo "<td>";
+        if($row["status"]==0){
+            echo "Inativo";
+        } else{
+            echo "Ativo";
+        }
+?>
+        <td></td>
+            <td style="width: 60px;">
+                <a href="" class="btn btn-success">Atualizar</a>
+            </td>
+            <td style="width: 60px;">
+                <a href="" class="btn btn-info">Editar</a>
+            </td>
+            <td style="width:60px;">
+                <a class="btn btn-danger" href="index.php?id="<?php $row["id"]?>>Excluir</a>
+            </td>
+<?php
+    echo "</td>";
+}
+?>
+
+    </tbody>
+    </table>
+
+    
+<!-- Scripts -->
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<?php
+    }
+    $conn->close();
+?>
+
 </body>
 </html>
